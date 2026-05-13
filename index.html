@@ -1,31 +1,268 @@
+# Professional Table-Based Data Redundancy Removal System
+
+## index.html
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Redundancy Removal System</title>
-    <link rel="stylesheet" href="style.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:'Poppins',sans-serif;
+        }
+
+        body{
+            background:linear-gradient(135deg,#4facfe,#00f2fe);
+            min-height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            padding:30px;
+        }
+
+        .container{
+            width:100%;
+            max-width:1100px;
+            background:white;
+            border-radius:25px;
+            padding:35px;
+            box-shadow:0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        h1{
+            text-align:center;
+            color:#1e3c72;
+            margin-bottom:10px;
+            font-size:38px;
+        }
+
+        .subtitle{
+            text-align:center;
+            color:#555;
+            margin-bottom:35px;
+        }
+
+        .form-section{
+            display:grid;
+            grid-template-columns:1fr 1fr 1fr auto;
+            gap:15px;
+            margin-bottom:30px;
+        }
+
+        input{
+            padding:14px;
+            border:1px solid #ddd;
+            border-radius:12px;
+            font-size:15px;
+            outline:none;
+            transition:0.3s;
+        }
+
+        input:focus{
+            border-color:#4facfe;
+            box-shadow:0 0 8px rgba(79,172,254,0.3);
+        }
+
+        button{
+            padding:14px 25px;
+            border:none;
+            border-radius:12px;
+            background:linear-gradient(135deg,#1e3c72,#2a5298);
+            color:white;
+            font-size:15px;
+            font-weight:600;
+            cursor:pointer;
+            transition:0.3s;
+        }
+
+        button:hover{
+            transform:translateY(-2px);
+            box-shadow:0 8px 18px rgba(0,0,0,0.2);
+        }
+
+        #message{
+            text-align:center;
+            margin-bottom:20px;
+            font-weight:600;
+            font-size:16px;
+        }
+
+        .table-container{
+            overflow-x:auto;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            border-radius:15px;
+            overflow:hidden;
+        }
+
+        thead{
+            background:linear-gradient(135deg,#1e3c72,#2a5298);
+            color:white;
+        }
+
+        th,td{
+            padding:16px;
+            text-align:center;
+        }
+
+        tbody tr:nth-child(even){
+            background:#f5f9ff;
+        }
+
+        tbody tr:hover{
+            background:#e8f3ff;
+        }
+
+        .unique{
+            color:green;
+            font-weight:600;
+        }
+
+        .duplicate{
+            color:red;
+            font-weight:600;
+        }
+
+        @media(max-width:900px){
+
+            .form-section{
+                grid-template-columns:1fr;
+            }
+
+        }
+
+    </style>
 </head>
 <body>
 
 <div class="container">
 
-    <h1>Data Redundancy Removal System</h1>
+    <h1>📊 Data Redundancy Removal System</h1>
 
-    <input type="text" id="dataInput" placeholder="Enter Data">
+    <p class="subtitle">
+        Prevent duplicate cloud database entries and maintain data accuracy.
+    </p>
 
-    <button onclick="addData()">Add Data</button>
+    <div class="form-section">
 
-    <h3 id="message"></h3>
+        <input type="text" id="username" placeholder="Enter Username">
 
-    <div class="data-list">
-        <h2>Stored Unique Data</h2>
-        <ul id="dataList"></ul>
+        <input type="email" id="email" placeholder="Enter Email">
+
+        <input type="text" id="department" placeholder="Enter Department">
+
+        <button onclick="addData()">Add Data</button>
+
+    </div>
+
+    <div id="message"></div>
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Department</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody id="tableBody">
+
+            </tbody>
+
+        </table>
+
     </div>
 
 </div>
 
-<script src="script.js"></script>
+<script>
+
+let database = [];
+let count = 1;
+
+function addData(){
+
+    let username = document.getElementById("username").value.trim();
+    let email = document.getElementById("email").value.trim();
+    let department = document.getElementById("department").value.trim();
+
+    let message = document.getElementById("message");
+
+    if(username === "" || email === "" || department === ""){
+
+        message.innerHTML = "❌ Please fill all fields";
+        message.style.color = "red";
+        return;
+    }
+
+    let duplicate = database.some(data =>
+        data.username === username && data.email === email
+    );
+
+    if(duplicate){
+
+        message.innerHTML = "❌ Duplicate Data Detected";
+        message.style.color = "red";
+        return;
+    }
+
+    let newData = {
+        id: count,
+        username,
+        email,
+        department,
+        status: "Unique"
+    };
+
+    database.push(newData);
+
+    let tableBody = document.getElementById("tableBody");
+
+    let row = `
+        <tr>
+            <td>${newData.id}</td>
+            <td>${newData.username}</td>
+            <td>${newData.email}</td>
+            <td>${newData.department}</td>
+            <td class="unique">${newData.status}</td>
+        </tr>
+    `;
+
+    tableBody.innerHTML += row;
+
+    message.innerHTML = "✅ Unique Data Added Successfully";
+    message.style.color = "green";
+
+    count++;
+
+    document.getElementById("username").value = "";
+    document.getElementById("email").value = "";
+    document.getElementById("department").value = "";
+}
+
+</script>
 
 </body>
 </html>
+
+
+on
